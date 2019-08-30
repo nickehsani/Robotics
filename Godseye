@@ -1,0 +1,40 @@
+duty_max = 12.5 * float(pwm_frequency) / 50.0
+
+    # Helper function to set the duty cycle
+def set_duty_cycle(angle):
+    return ((duty_max - duty_min) * float(angle) / 180.0 + duty_min)
+
+    # Create a PWM instance
+pwm_servo = GPIO.PWM(ServoPin, pwm_frequency)
+
+# --- End of the PWM setup ---
+
+
+
+
+
+# Main program 
+if __name__ == '__main__':
+
+    try:
+        
+        # This code repeats forever
+        while True:
+
+            # Move the servo
+            angle = 0
+            pwm_servo.start(set_duty_cycle(angle))
+            print ("Moving to angle 0")
+            time.sleep(1)
+                       
+            angle = 180
+            pwm_servo.start(set_duty_cycle(angle))
+            print ("Moving to angle 180")
+            time.sleep(1)
+
+            
+    # Reset by pressing CTRL + C
+    except KeyboardInterrupt:
+        print("Program stopped by User")
+        GPIO.cleanup()
+
