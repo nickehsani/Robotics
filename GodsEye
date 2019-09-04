@@ -32,28 +32,33 @@ if __name__ == '__main__':
 
             image = frame.array
 
-            image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+            blurred_masked = cv2.GaussianBlur(image, (5,5), 0) 
 
-            lowerColorThreshold = np.array([0, 153, 41])
-            upperColorThreshold = np.array([255, 255, 255])
+            image_hsv = cv2.cvtColor(blurred_masked, cv2.COLOR_BGR2HSV)
 
-            ourmask = cv2.inRange(image_hsv, lowerColorThreshold, upperColorThreshold)
+            lower_red = np.array([0, 153, 41])
+            upper_red = np.array([255, 255, 255])
+
+            ourmask = cv2.inRange(image_hsv, lower_red, upper_red)
 
             image_masked = cv2.bitwise_and(image, image, mask = ourmask)
 
+            _, contours, _ = cv2.findContours(ourmask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
+            cv2.drawContours(image, contours, -1, (0,255,0), 3)
+
             cv2.imshow("Masked image", image_masked)
+            cv2.imshow("blurred image", blurred_masked)
+            cv2.imshow("image", image)
 
             cv2.waitKey(1)
-            
-            #if image == 
 
-        cv2.destroyAllWindows()
-        camera.close()
 
     except KeyboardInterrupt:
         print("Program stopped by User")
         cv2.destroyAllWindows()
         camera.close()
+
 
 
 
