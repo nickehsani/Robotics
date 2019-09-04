@@ -3,6 +3,12 @@ import picamera.array
 import time
 import cv2
 import numpy as np
+import smtplib,ssl
+from email.mime.multipart import MIMEMultipart  
+from email.mime.base import MIMEBase  
+from email.mime.text import MIMEText  
+from email.utils import formatdate  
+from email import encoders 
 
 
 camera = picamera.PiCamera()
@@ -51,16 +57,50 @@ if __name__ == '__main__':
             cv2.imshow("blurred image", blurred_masked)
             cv2.imshow("image", image)
 
+            area = cv2.contourArea()
+
             cv2.waitKey(1)
+
+            if area > 100:
+                camera.capture( 'RedDetection.jpg')
+                def send_an_email():  
+                    toaddr = 'chris.velasquez511@gmail.com'      # To id 
+                    me = 'chris.velasquez511@gmail.com'          # your id
+                    subject = "Security Footage"              # Subject
+                
+                    msg = MIMEMultipart()  
+                    msg['Subject'] = subject  
+                    msg['From'] = me  
+                    msg['To'] = toaddr  
+                    msg.preamble = "test "   
+                    #msg.attach(MIMEText(text))  
+                
+                    part = MIMEBase('application', "octet-stream")  
+                    part.set_payload(open("reddetection.jpg", "rb").read())  
+                    encoders.encode_base64(part)  
+                    part.add_header('Content-Disposition', 'attachment; filename="reddetection.jpg"')   # File name and format name
+                    msg.attach(part)  
+                
+                    try:  
+                    s = smtplib.SMTP('smtp.gmail.com', 587)  # Protocol
+                    s.ehlo()  
+                    s.starttls()  
+                    s.ehlo()  
+                    s.login(user = 'chris.velasquez511@gmail.com', password = 'chris1135952840')  # User id & password
+                    #s.send_message(msg)  
+                    s.sendmail(me, toaddr, msg.as_string())  
+                    s.quit()  
+                    #except:  
+                    #   print ("Error: unable to send email")    
+                    except SMTPException as error:  
+                        print ("Error")                # Exception
+  
+                send_an_email()
+                
+                time.sleep(5)
 
 
     except KeyboardInterrupt:
         print("Program stopped by User")
         cv2.destroyAllWindows()
         camera.close()
-
-
-
-
-
-
