@@ -34,7 +34,7 @@ def largest_area(contours):
         
         
 def send_an_email():  
-    toaddr = 'nickehsani@gmail.com'      # To id 
+    toaddr = 'cjvelasq@ucsd.edu'      # To id 
     me = 'chris.velasquez511@gmail.com'          # your id
     subject = "Security Footage"              # Subject
     print("part1")
@@ -70,7 +70,7 @@ def send_an_email():
 
 time.sleep(1)
 
-
+reddetected = 0
 # Main Program
 
 if __name__ == '__main__':
@@ -87,28 +87,46 @@ if __name__ == '__main__':
 
             image_hsv = cv2.cvtColor(blurred_masked, cv2.COLOR_BGR2HSV)
 
-            lower_red = np.array([0, 153, 41])
-            upper_red = np.array([255, 255, 255])
+            lower_red = np.array([0, 50, 50])
+            upper_red = np.array([10, 255, 255])
+            
 
-            ourmask = cv2.inRange(image_hsv, lower_red, upper_red)
+            ourmask1 = cv2.inRange(image_hsv, lower_red, upper_red)
 
+            lower_red = np.array([170,50,50])
+            upper_red = np.array([180,255,255])
+            mask1 = cv2.inRange(image_hsv, lower_red, upper_red)
+
+            ourmask = ourmask1 + mask1
             image_masked = cv2.bitwise_and(image, image, mask = ourmask)
 
             _, contours, _ = cv2.findContours(ourmask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
             cv2.drawContours(image, contours, -1, (0,255,0), 3)
 
+            cv2.imshow("ourmask", ourmask)
             cv2.imshow("Masked image", image_masked)
             cv2.imshow("blurred image", blurred_masked)
             cv2.imshow("image", image)
 
+
             if len(contours) != 0:
                 absolutemax = largest_area(contours)
-                
-                if  absolutemax > 300:
-                    camera.capture( 'RedDetection.jpg')
-                    send_an_email()
-                    print("its golden hour")
+                print(absolutemax)
+                if absolutemax > 100000:
+                    if reddetected == 0:
+                        time.sleep(3)
+                        camera.capture( 'RedDetection.jpg')
+                        send_an_email()
+                        print("its golden hour")
+                        reddetected = 1
+                else:
+                    if absolutemax < 100000:
+                        if reddetected == 1:
+                            print("it ain't golden hour no more :(")
+                            reddetected = 0
+                            
+                    
                 
 
             cv2.waitKey(1)
@@ -119,3 +137,4 @@ if __name__ == '__main__':
         print("Program stopped by User")
         cv2.destroyAllWindows()
         camera.close()
+
