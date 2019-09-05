@@ -12,7 +12,7 @@ from email.mime.text import MIMEText
 from email.utils import formatdate  
 from email import encoders 
 
-# Camera Settings 
+# Camera Settings
 camera = picamera.PiCamera()
 camera.resolution = (640, 480)
 camera.framerate = 60
@@ -38,7 +38,8 @@ def largest_area(contours):
         
 def send_an_email():
     ''' Sends email with attachment from my email address to another'''
-    toaddr = 'cjvelasq@ucsd.edu'      # To id 
+    recipient = input("Please enter your email: ")
+    toaddr = recipient       # To id 
     me = 'chris.velasquez511@gmail.com'          # your id
     subject = "Security Footage"              # Subject
     print("part1")
@@ -52,9 +53,9 @@ def send_an_email():
     print("part2")
                 
     part = MIMEBase('application', "octet-stream")  
-    part.set_payload(open("RedDetection.jpg", "rb").read())  
+    part.set_payload(open("Spis2019.jpg", "rb").read())  
     encoders.encode_base64(part)  
-    part.add_header('Content-Disposition', 'attachment; filename="RedDetection.jpg"')   # File name and format name
+    part.add_header('Content-Disposition', 'attachment; filename="Spis2019.jpg"')   # File name and format name
     msg.attach(part)  
     print("part3")
     try:  
@@ -130,7 +131,7 @@ if __name__ == '__main__':
                     # Change the state value to 1 so that this code doesn't run again even if the contour remains in the image
                     if reddetected == 0:
                         time.sleep(3)
-                        camera.capture( 'RedDetection.jpg')
+                        camera.capture( 'Spis2019.jpg')
                         send_an_email()
                         print("its golden hour")
                         reddetected = 1
